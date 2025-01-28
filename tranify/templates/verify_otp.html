@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP - Trainify</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <link rel="stylesheet" href="{% static 'css/otp.css' %}">
+</head>
+<body>
+  <header>
+    {% include 'navbar.html' %}
+  </header>
+  
+  <main>
+    <section class="otp-container">
+      <h2>Verify OTP</h2>
+      <form action="{% url 'verify_otp' %}" method="POST">
+        {% csrf_token %}
+        <label for="otp">Enter OTP:</label>
+        <input type="text" name="otp" required>
+        <button type="submit">Verify</button>
+      </form>
+      <center>
+        {% if messages %} 
+          <p style="color: red;">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          </p>
+        {% endif %}
+      </center>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

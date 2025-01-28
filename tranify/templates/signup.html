@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Trainify</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <!-- <link rel="stylesheet" href="{% static 'css/signup.css' %}"> -->
+</head>
+<body>
+
+  <header>
+    {% include 'navbar.html' %}
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Title section -->
+      <div class="title">SIGNUP</div>
+      <div class="content">
+        <!-- Registration form -->
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="user-details">
+            <!-- Input for Name -->
+            <div class="input-box">
+              <span class="details">NAME:</span>
+              <input name="name" type="text" required>
+            </div>
+            <!-- Input for Email -->
+            <div class="input-box">
+              <span class="details">EMAIL:</span>
+              <input name="email" type="email" required>
+            </div>
+            <!-- Input for Password -->
+            <div class="input-box">
+              <span class="details">PASSWORD:</span>
+              <input name="password" type="password" required>
+            </div>
+            <!-- Input for Confirm Password -->
+            <div class="input-box">
+              <span class="details">CONFIRM PASSWORD:</span>
+              <input name="cpassword" type="password" required>
+            </div>
+          </div>
+          <br> 
+          <!-- Submit button -->
+          <div class="button">
+            <input type="submit" value="SIGNUP">
+          </div>
+          <center>
+            {% if messages %} <p style="color: red;">
+                {% for message in messages %}
+                    {{message}}
+                {% endfor %}
+            </p>{% endif %}
+        </center>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">LOGIN</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Classification - Trainify</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+</head>
+<body>
+  <header>
+    {% include 'navbar.html' %}
+  </header>
+  
+  <main>
+    <section class="login-container">
+      <h2>Project Classification</h2>
+      <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Project Name -->
+        <label for="project-name">Project Name:</label>
+        <input type="text" id="project-name" name="project_name" placeholder="Enter project name" required>
+        
+        <!-- Number of Classifications -->
+        <label for="classification">Number of Classifications:</label>
+        <select id="classification" name="no_of_classes">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </select>
+
+        <!-- Zip File Upload -->
+        <label for="dataset">Upload Dataset (ZIP):</label>
+        <input type="file" id="dataset" name="dataset" accept=".zip" required>
+
+        <!-- Epochs Input -->
+        <label for="epochs">Number of Epochs:</label>
+        <input type="number" id="epochs" name="epochs" min="1" placeholder="Enter number of epochs" required>
+
+        <!-- Model Selection Checkboxes -->
+        <label>Select Model(s):</label>
+        <div class="model-options">
+          <label><input type="checkbox" name="models" value="alexnet"> AlexNet</label>
+          <label><input type="checkbox" name="models" value="vgg16"> VGG16</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+        <center>
+          {% if messages %} <p style="color: red;">
+              {% for message in messages %}
+                  {{message}}
+              {% endfor %}
+          </p>{% endif %}
+      </center>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

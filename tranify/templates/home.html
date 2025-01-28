@@ -1,0 +1,38 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainify - Train Your AI Model</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+   
+    {% include 'navbar.html' %}
+    
+    <section class="banner">
+        
+        {% if not user.is_authenticated %}
+        <img src="{% static 'img/home.jpg' %}" alt="AI Training Illustration">
+        <button onclick="window.location.href='{% url 'login' %}';">Explore</button>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <img src="{% static 'img/home.jpg' %}" alt="AI Training Illustration">
+        <button onclick="window.location.href='{% url 'upload' %}';">Explore</button>
+        {% endif %}
+       
+    </section>
+    
+    <footer>
+        <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function explore() {
+            alert("Exploring Trainify Features!");
+        }
+    </script>
+</body>
+</html>

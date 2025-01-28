@@ -1,0 +1,46 @@
+ /* Main OTP Section Styling */
+ .otp-container {
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: #444;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .otp-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #00bcd4;
+  }
+
+  .otp-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+
+  .otp-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border: 1px solid #666;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+  }
+
+  .otp-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #00bcd4;
+    color: #222;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .otp-container button:hover {
+    background-color: #0097a7;
+  }
