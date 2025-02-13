@@ -2,10 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .otp import generate_otp, send_otp 
-import os
+from django.core.files.storage import default_storage
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+import os
+import zipfile
+import shutil
+from .vgg16 import train_vgg16
+from .otp import generate_otp, send_otp 
+
 
 
 def signup_user(request):
@@ -107,46 +112,87 @@ def home(request):
     return render(request,'home.html')
 
 
-@login_required(login_url=login)
+
+
+@login_required(login_url='login')
 def upload(request):
     if request.method == "POST":
-        project_name = request.POST.get("project_name") 
-        no_of_classes = request.POST.get("no_of_classes")
-        dataset_file = request.FILES.get("dataset")  # Getting the uploaded file
-        epochs = request.POST.get("epochs")
-        selected_models = request.POST.getlist("models")  # Getting selected models as a list
+        project_name = request.POST.get("project_name")
+        dataset_file = request.FILES.get("dataset")
+        epochs = int(request.POST.get("epochs", 10))
 
-        if not project_name or not no_of_classes or not dataset_file or not epochs:
+        if not project_name or not dataset_file:
             messages.error(request, "All fields are required!")
             return redirect("upload")
 
-    
         user_id = request.session.get('user_id')  
         if not user_id:
             messages.error(request, "User authentication required!")
             return redirect("login")  
 
         project_folder_path = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name)
-        os.makedirs(project_folder_path, exist_ok=True)  
+        os.makedirs(project_folder_path, exist_ok=True)
 
-    
-        dataset_path = os.path.join(project_folder_path, dataset_file.name)
-        with open(dataset_path, "wb") as destination:
-            for chunk in dataset_file.chunks():
-                destination.write(chunk)
+        num_classes, class_names, class_image_counts, dataset_root = handle_uploaded_zip(dataset_file, project_folder_path)
 
-      
+        if num_classes == 0:
+            messages.error(request, "Invalid dataset. No valid classes found.")
+            return redirect("upload")
+
+        model_path, history = train_vgg16(dataset_root, num_classes,user_id,project_name, epochs)
+        # print
         project_data = {
             "project_name": project_name,
-            "no_of_classes": no_of_classes,
+            "num_classes": num_classes,
+            "class_names": class_names,
+            "image_counts": class_image_counts,
             "epochs": epochs,
-            "selected_models": selected_models,
-            "dataset_path": dataset_path
+            "model_path": model_path
         }
         print(project_data)
-        # Display a success message
-        messages.success(request, "Project classification submitted successfully!")
 
-        return redirect("upload")  # Redirect to the upload page or another page
+        messages.success(request, f"Model trained successfully! Saved at {model_path}")
+        return redirect("upload")
 
     return render(request, "upload.html")
+
+
+
+
+def handle_uploaded_zip(file, extract_path):
+    if os.path.exists(extract_path):
+        shutil.rmtree(extract_path)
+    os.makedirs(extract_path, exist_ok=True)
+
+    temp_zip_path = os.path.join(extract_path, file.name)
+    with default_storage.open(temp_zip_path, 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+    try:
+        with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_path)
+    except zipfile.BadZipFile:
+        os.remove(temp_zip_path)
+        return 0, {}, {}
+
+    os.remove(temp_zip_path)
+
+    extracted_dirs = [d for d in os.listdir(extract_path) if os.path.isdir(os.path.join(extract_path, d))]
+    dataset_root = os.path.join(extract_path, extracted_dirs[0]) if len(extracted_dirs) == 1 else extract_path
+
+    class_names = [name for name in os.listdir(dataset_root)
+                   if os.path.isdir(os.path.join(dataset_root, name))
+                   and any(f.endswith(('.jpg', '.jpeg', '.png', '.bmp')) for f in os.listdir(os.path.join(dataset_root, name)))]
+
+    num_classes = len(class_names)
+    class_image_counts = {cls: count_images(os.path.join(dataset_root, cls)) for cls in class_names}
+
+    return num_classes, class_names, class_image_counts, dataset_root
+
+
+def count_images(directory):
+    return len([file for file in os.listdir(directory) if file.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp'))])
+
+
+
