@@ -69,7 +69,7 @@
     font-weight: bold;
   }
 
-  .login-container input,
+  .login-container .login-input,
   .login-container select {
     width: 100%;
     padding: 10px;
@@ -95,18 +95,6 @@
     background-color: #0097a7;
   }
 
-  /* Checkbox Styling */
-  .model-options {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-    padding-left: 100px;
-  }
-
-  .model-options label {
-    margin-bottom: 0.5rem;
-  }
-
   /* Footer Styling */
   footer {
     text-align: center;
@@ -117,3 +105,9 @@
     bottom: 0;
     width: 100%;
   }
+
+  .model-options div label{
+    margin-bottom: 0;
+  }
+  
+  

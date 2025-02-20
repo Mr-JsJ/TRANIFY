@@ -1,0 +1,46 @@
+{% load static %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Trainify</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <link rel="stylesheet" href="{% static 'css/yourproject.css' %}">
+</head>
+<body>
+
+  <header>
+    {% include 'navbar.html' %}
+  </header>
+    <div class="containerp">
+        <h1 class="page-title">Your Projects</h1>
+        <p class="page-description">Manage and track your machine learning projects with ease.</p>
+        
+        <div class="project-grid">
+            {% for project in projects %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ project.project_name }}</h3>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-list"></i> <strong>Number of Classes:</strong> {{ project.num_classes }}</p>
+                    <p><i class="fas fa-tags"></i> <strong>Class Names:</strong> {{ project.class_names|join:", " }}</p>
+                    <p><i class="fas fa-chart-line"></i> <strong>Epochs:</strong> {{ project.epochs }}</p>
+                    <p><i class="fas fa-brain"></i> <strong>Trained Models:</strong> {{ project.trained_models|join:", " }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'model_details' project.id %}" class="btn btn-info">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+      </footer>
+</body>
+</html>
+{% endblock content %}

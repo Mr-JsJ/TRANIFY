@@ -1,38 +1,68 @@
-{% load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trainify - Train Your AI Model</title>
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <style>
+        body {
+            overflow-y: hidden;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            text-align: center;
+        }
+        .banner {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{% static "img/home.jpg" %}') center/cover;
+            color: white;
+        }
+        .banner button {
+            padding: 12px 24px;
+            font-size: 18px;
+            color: white;
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .banner button:hover {
+            background: #0056b3;
+        }
+        footer {
+            padding: 15px;
+            background: #222;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-   
     {% include 'navbar.html' %}
-    
     <section class="banner">
-        
-        {% if not user.is_authenticated %}
-        <img src="{% static 'img/home.jpg' %}" alt="AI Training Illustration">
-        <button onclick="window.location.href='{% url 'login' %}';">Explore</button>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <img src="{% static 'img/home.jpg' %}" alt="AI Training Illustration">
-        <button onclick="window.location.href='{% url 'upload' %}';">Explore</button>
-        {% endif %}
-       
+        <div>
+            <h1>Welcome to Trainify</h1>
+            <p>Train your classification model effortlessly with an intuitive interface.</p>
+            {% if not user.is_authenticated %}
+                <button onclick="window.location.href='{% url 'login' %}';">Get Started</button>
+            {% else %}
+                <button onclick="window.location.href='{% url 'upload' %}';">Upload Dataset</button>
+            {% endif %}
+        </div>
     </section>
-    
     <footer>
         <p>&copy; 2025 Trainify. All Rights Reserved.</p>
     </footer>
-
-    <script>
-        function explore() {
-            alert("Exploring Trainify Features!");
-        }
-    </script>
 </body>
 </html>

@@ -1,0 +1,33 @@
+{% block content %}
+<div class="container">
+    <h1>{{ trained_model.project_name }}</h1>
+    <p><strong>Number of Classes:</strong> {{ trained_model.num_classes }}</p>
+    <p><strong>Class Names:</strong> {{ trained_model.class_names|join:", " }}</p>
+    <p><strong>Epochs:</strong> {{ trained_model.epochs }}</p>
+
+    <h3>Image Counts Per Class</h3>
+    <ul>
+        {% for class, count in trained_model.image_counts.items %}
+        <li>{{ class }}: {{ count }} images</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Trained Models</h3>
+    <ul>
+        {% for model, path in trained_model.model_paths.items %}
+        <li>
+            <strong>{{ model }}</strong> - <a href="{{ path }}" download>Download Model</a>
+            <div class="model-images">
+                <h4>Performance Metrics</h4>
+                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
+                     alt="{{ model }} Accuracy" class="metric-image">
+                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
+                     alt="{{ model }} Loss" class="metric-image">
+                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
+                     alt="{{ model }} Confusion Matrix" class="metric-image">
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

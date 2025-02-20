@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -8,7 +8,7 @@ from django.conf import settings
 import os
 import zipfile
 import shutil
-from .vgg16 import train_vgg16
+from .vgg16 import train_vgg16,train_cnn
 from .otp import generate_otp, send_otp 
 
 
@@ -114,15 +114,68 @@ def home(request):
 
 
 
+# @login_required(login_url='login')
+# def upload(request):
+#     if request.method == "POST":
+#         project_name = request.POST.get("project_name")
+#         dataset_file = request.FILES.get("dataset")
+#         epochs = int(request.POST.get("epochs", 10))
+
+#         if not project_name or not dataset_file:
+#             messages.error(request, "All fields are required!")
+#             return redirect("upload")
+
+#         user_id = request.session.get('user_id')  
+#         if not user_id:
+#             messages.error(request, "User authentication required!")
+#             return redirect("login")  
+
+#         project_folder_path = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name)
+#         os.makedirs(project_folder_path, exist_ok=True)
+
+#         num_classes, class_names, class_image_counts, dataset_root = handle_uploaded_zip(dataset_file, project_folder_path)
+
+#         if num_classes == 0:
+#             messages.error(request, "Invalid dataset. No valid classes found.")
+#             return redirect("upload")
+
+#         model_path, history = train_vgg16(dataset_root, num_classes,user_id,project_name, epochs)
+#         model_path, history = train_cnn(dataset_root, num_classes,user_id,project_name, epochs)
+#         # print
+#         project_data = {
+#             "project_name": project_name,
+#             "num_classes": num_classes,
+#             "class_names": class_names,
+#             "image_counts": class_image_counts,
+#             "epochs": epochs,
+#             "model_path": model_path
+#         }
+#         print(project_data)
+
+#         messages.success(request, f"Model trained successfully! Saved at {model_path}")
+#         return redirect("upload")
+
+#     return render(request, "upload.html")
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+import os
+from .vgg16 import train_vgg16
+# train_alexnet, train_resnet50, train_mobilenetv2
+from .models import TrainedModel
+
 @login_required(login_url='login')
 def upload(request):
     if request.method == "POST":
         project_name = request.POST.get("project_name")
         dataset_file = request.FILES.get("dataset")
         epochs = int(request.POST.get("epochs", 10))
+        selected_models = request.POST.getlist("models")  # List of selected models
 
-        if not project_name or not dataset_file:
-            messages.error(request, "All fields are required!")
+        if not project_name or not dataset_file or not selected_models:
+            messages.error(request, "All fields are required, and at least one model must be selected!")
             return redirect("upload")
 
         user_id = request.session.get('user_id')  
@@ -139,23 +192,46 @@ def upload(request):
             messages.error(request, "Invalid dataset. No valid classes found.")
             return redirect("upload")
 
-        model_path, history = train_vgg16(dataset_root, num_classes,user_id,project_name, epochs)
-        # print
-        project_data = {
-            "project_name": project_name,
-            "num_classes": num_classes,
-            "class_names": class_names,
-            "image_counts": class_image_counts,
-            "epochs": epochs,
-            "model_path": model_path
-        }
-        print(project_data)
+        trained_models = []
+        model_paths = {}
 
-        messages.success(request, f"Model trained successfully! Saved at {model_path}")
+        # Train models based on selection
+        if "vgg16" in selected_models:
+            model_path, _ = train_vgg16(dataset_root, num_classes, user_id, project_name, epochs)
+            trained_models.append("VGG16")
+            model_paths["VGG16"] = model_path
+
+        if "alexnet" in selected_models:
+            model_path, _ = train_alexnet(dataset_root, num_classes, user_id, project_name, epochs)
+            trained_models.append("AlexNet")
+            model_paths["AlexNet"] = model_path
+
+        if "resnet50" in selected_models:
+            model_path, _ = train_resnet50(dataset_root, num_classes, user_id, project_name, epochs)
+            trained_models.append("ResNet50")
+            model_paths["ResNet50"] = model_path
+
+        if "mobilenetv2" in selected_models:
+            model_path, _ = train_mobilenetv2(dataset_root, num_classes, user_id, project_name, epochs)
+            trained_models.append("MobileNetV2")
+            model_paths["MobileNetV2"] = model_path
+
+        # Save project details to database
+        trained_model = TrainedModel.objects.create(
+            user=request.user,
+            project_name=project_name,
+            num_classes=num_classes,
+            class_names=class_names,
+            image_counts=class_image_counts,
+            epochs=epochs,
+            trained_models=trained_models,
+            model_paths=model_paths
+        )
+        
+        messages.success(request, f"Models trained successfully! Saved at {model_paths}")
         return redirect("upload")
 
     return render(request, "upload.html")
-
 
 
 
@@ -195,4 +271,13 @@ def count_images(directory):
     return len([file for file in os.listdir(directory) if file.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp'))])
 
 
+from .models import TrainedModel
 
+def user_projects(request):
+    projects = TrainedModel.objects.filter(user=request.user)
+    return render(request, 'yourproject.html', {'projects': projects})
+
+
+def model_details(request, model_id):
+    trained_model = get_object_or_404(TrainedModel, id=model_id, user=request.user)
+    return render(request, 'model_details.html', {'trained_model': trained_model})
