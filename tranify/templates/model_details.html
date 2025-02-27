@@ -1,3 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ trained_model.project_name }} - Trainify</title>
+    <link rel="stylesheet" href="{% static 'css/details.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/home.css' %}"> -->
+</head>
+<body>
+ 
+    {% include 'navbar.html' %}
+  
 {% block content %}
 <div class="container">
     <h1>{{ trained_model.project_name }}</h1>
@@ -15,19 +29,54 @@
     <h3>Trained Models</h3>
     <ul>
         {% for model, path in trained_model.model_paths.items %}
-        <li>
-            <strong>{{ model }}</strong> - <a href="{{ path }}" download>Download Model</a>
-            <div class="model-images">
-                <h4>Performance Metrics</h4>
-                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
-                     alt="{{ model }} Accuracy" class="metric-image">
-                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
-                     alt="{{ model }} Loss" class="metric-image">
-                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
-                     alt="{{ model }} Confusion Matrix" class="metric-image">
-            </div>
-        </li>
-        {% endfor %}
+    <li>
+        <strong>{{ model }}</strong> - <a href="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ trained_model.project_name }}_{{ model }}.h5" download>Download Model</a>
+
+        <div class="model-images">
+            <h4>Performance Metrics</h4>
+            <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
+                 alt="{{ model }} Accuracy" class="metric-image">
+           <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
+                   alt="{{ model }} Loss" class="metric-image">
+            <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
+                 alt="{{ model }} Confusion Matrix" class="metric-image">
+        </div>
+    </li>
+{% endfor %}
     </ul>
 </div>
+ <footer>
+    <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.createElement("div");
+        modal.classList.add("image-modal");
+        modal.innerHTML = '<span class="close">&times;</span><img src="">';
+        document.body.appendChild(modal);
+
+        const modalImg = modal.querySelector("img");
+        const closeModal = modal.querySelector(".close");
+
+        document.querySelectorAll(".metric-image").forEach(img => {
+            img.addEventListener("click", function () {
+                modal.style.display = "flex";
+                modalImg.src = this.src;
+            });
+        });
+
+        closeModal.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+
+        modal.addEventListener("click", function (e) {
+            if (e.target !== modalImg) {
+                modal.style.display = "none";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
 {% endblock %}

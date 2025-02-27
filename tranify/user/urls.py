@@ -12,6 +12,8 @@ urlpatterns = [
   path('logout_user',views.logout_user,name='logout'),
   path('upload',views.upload,name='upload'), 
   path('your-projects/',views.user_projects, name='your_projects'),
-  path('model_details/<int:model_id>/',views.model_details, name='model_details')
+  path('model_details/<int:model_id>/',views.model_details, name='model_details'),
   # path('process_training/', views.process_training, name='process_training')
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+if settings.DEBUG:  # Serve media files in development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

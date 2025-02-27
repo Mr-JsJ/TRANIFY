@@ -95,16 +95,16 @@
     background-color: #0097a7;
   }
 
-  /* Footer Styling */
-  footer {
+footer {
     text-align: center;
     padding: 1rem;
     background-color: #333;
     color: #fff;
-    position: fixed;
+    position: relative;  /* Change from fixed */
     bottom: 0;
     width: 100%;
-  }
+    margin-top: 30px;
+}
 
   .model-options div label{
     margin-bottom: 0;

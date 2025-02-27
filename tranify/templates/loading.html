@@ -1,73 +1,208 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training in Progress</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Training Progress - Trainify</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/upload.css' %}">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
+        .progress-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
         }
-        .loader-container {
-            text-align: center;
+
+        .progress-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
         }
-        .loader {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: auto;
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
         }
-        h2 {
-            margin-top: 20px;
-            color: #333;
+
+        .training-details {
+            margin-top: 1rem;
+        }
+
+        .model-progress {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .current-epoch {
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .metrics {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
         }
     </style>
 </head>
 <body>
-    <div class="loader-container">
-        <div class="loader"></div>
-        <h2>Model Training in Progress... Please Wait</h2>
+    {% include 'navbar.html' %}
+
+    <main>
+        <section class="login-container">
+            <h2>Start Your Project!!!</h2>
+            <form id="training-form" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Original form fields remain the same -->
+                <label for="project-name">Project Name:</label>
+                <input type="text" id="project-name" name="project_name" placeholder="Enter project name" class="login-input" required>
+                
+                <label for="dataset">Upload Dataset (ZIP):</label>
+                <input type="file" id="dataset" name="dataset" accept=".zip" class="login-input" required>
+
+                <label for="epochs">Number of Epochs:</label>
+                <input type="number" id="epochs" name="epochs" min="10" max="50" placeholder="Enter number of epochs" class="login-input" required>
+
+                <label>Select Model(s):</label>
+                <div class="model-options">
+                    <div><input type="checkbox" name="models" value="alexnet"> <label>AlexNet</label></div>
+                    <div><input type="checkbox" name="models" value="vgg16"> <label>VGG16</label></div>
+                    <div><input type="checkbox" name="models" value="resnet50"> <label>ResNet50</label></div>
+                    <div><input type="checkbox" name="models" value="mobilenetv2"><label>MobileNetV2</label></div>
+                </div>
+
+                <button type="submit">Submit</button>
+                
+                <center>
+                    {% if messages %}
+                    <p style="color: red;">
+                        {% for message in messages %}
+                            {{message}}
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+                </center>
+            </form>
+        </section>
+    </main>
+
+    <!-- Progress Modal -->
+    <div id="progress-container" class="progress-container">
+        <div class="progress-content">
+            <h3>Training in Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="training-details">
+                <p>Project: <span id="project-name-display"></span></p>
+                <p>Current Model: <span id="current-model"></span></p>
+                <div id="model-progress"></div>
+            </div>
+        </div>
     </div>
 
+    <footer>
+        <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+    </footer>
+
     <script>
-        $(document).ready(function () {
-            var formData = new FormData();
-            formData.append("project_name", "{{ project_name }}");
-            formData.append("epochs", "{{ epochs }}");
-            formData.append("dataset", localStorage.getItem("dataset")); // Store dataset in localStorage before submitting
-            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-    
-            $.ajax({
-                url: "{% url 'process_training' %}",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    alert(response.success);
-                    window.location.href = "{% url 'upload' %}";
-                },
-                error: function (xhr) {
-                    alert("Error: " + xhr.responseText);
-                    window.location.href = "{% url 'upload' %}";
+        document.getElementById('training-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const progressContainer = document.getElementById('progress-container');
+            const progressFill = document.querySelector('.progress-fill');
+            const projectNameDisplay = document.getElementById('project-name-display');
+            const currentModel = document.getElementById('current-model');
+            const modelProgress = document.getElementById('model-progress');
+
+            // Show progress container
+            progressContainer.style.display = 'block';
+            projectNameDisplay.textContent = formData.get('project_name');
+
+            // Start training
+            fetch('{% url "start_training" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.task_id) {
+                    checkProgress(data.task_id);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                progressContainer.style.display = 'none';
+                alert('An error occurred while starting the training.');
             });
         });
+
+        function checkProgress(taskId) {
+            const progressInterval = setInterval(() => {
+                fetch(`{% url "check_progress" %}?task_id=${taskId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateProgress(data);
+                        if (data.status === 'completed') {
+                            clearInterval(progressInterval);
+                            window.location.href = data.redirect_url;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        clearInterval(progressInterval);
+                    });
+            }, 1000);
+        }
+
+        function updateProgress(data) {
+            const progressFill = document.querySelector('.progress-fill');
+            const currentModel = document.getElementById('current-model');
+            const modelProgress = document.getElementById('model-progress');
+
+            progressFill.style.width = `${data.overall_progress}%`;
+            currentModel.textContent = data.current_model;
+
+            // Update model-specific progress
+            modelProgress.innerHTML = `
+                <div class="model-progress">
+                    <p class="current-epoch">Epoch ${data.current_epoch}/${data.total_epochs}</p>
+                    <p class="metrics">
+                        Loss: ${data.current_loss.toFixed(4)}<br>
+                        Accuracy: ${(data.current_accuracy * 100).toFixed(2)}%
+                    </p>
+                </div>
+            `;
+        }
     </script>
-    
-    
 </body>
 </html>
