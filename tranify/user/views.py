@@ -142,27 +142,39 @@ def upload(request):
 
         trained_models = []
         model_paths = {}
+        metrics_dict = {}  # Dictionary to store metrics for each model
 
         # Train models based on selection
         if "vgg16" in selected_models:
-            model_path, _ = train_vgg16(dataset_root, num_classes, user_id, project_name, epochs)
+            model_path, _, metrics = train_vgg16(dataset_root, num_classes, user_id, project_name, epochs)
             trained_models.append("VGG16")
             model_paths["VGG16"] = model_path
+            metrics_dict["VGG16"] = metrics  # Store metrics
 
         if "alexnet" in selected_models:
-            model_path, _ = train_alexnet(dataset_root, num_classes, user_id, project_name, epochs)
+            model_path, _, metrics = train_alexnet(dataset_root, num_classes, user_id, project_name, epochs)
             trained_models.append("AlexNet")
             model_paths["AlexNet"] = model_path
+            metrics_dict["AlexNet"] = metrics
 
         if "resnet50" in selected_models:
-            model_path, _ = train_resnet50(dataset_root, num_classes, user_id, project_name, epochs)
+            model_path, _, metrics = train_resnet50(dataset_root, num_classes, user_id, project_name, epochs)
             trained_models.append("ResNet50")
             model_paths["ResNet50"] = model_path
+            metrics_dict["ResNet50"] = metrics
 
         if "mobilenetv2" in selected_models:
-            model_path, _ = train_mobilenetv2(dataset_root, num_classes, user_id, project_name, epochs)
+            model_path, _, metrics = train_mobilenetv2(dataset_root, num_classes, user_id, project_name, epochs)
             trained_models.append("MobileNetV2")
             model_paths["MobileNetV2"] = model_path
+            metrics_dict["MobileNetV2"] = metrics
+
+        # Extract metrics from dictionary
+        recall_scores = {model: metrics["recall"] for model, metrics in metrics_dict.items()}
+        f1_scores = {model: metrics["f1_score"] for model, metrics in metrics_dict.items()}
+        precision_scores = {model: metrics["precision"] for model, metrics in metrics_dict.items()}
+        accuracy_scores = {model: metrics["accuracy"] for model, metrics in metrics_dict.items()}
+        loss_values = {model: metrics["loss"] for model, metrics in metrics_dict.items()}
 
         # Save project details to database
         trained_model = TrainedModel.objects.create(
@@ -173,15 +185,18 @@ def upload(request):
             image_counts=class_image_counts,
             epochs=epochs,
             trained_models=trained_models,
-            model_paths=model_paths
+            model_paths=model_paths,
+            recall=recall_scores,
+            f1_score=f1_scores,
+            precision=precision_scores,
+            accuracy=accuracy_scores,
+            loss=loss_values
         )
         
         messages.success(request, f"Models trained successfully! Saved at {model_paths}")
-        return redirect("upload")
+        return redirect("model_details", model_id=trained_model.id)
 
     return render(request, "upload.html")
-
-
 
 def handle_uploaded_zip(file, extract_path):
     if os.path.exists(extract_path):
@@ -227,9 +242,11 @@ def user_projects(request):
 
 def model_details(request, model_id):
     trained_model = get_object_or_404(TrainedModel, id=model_id, user=request.user)
+    print("trained_model",trained_model)
     return render(request, 'model_details.html', {
         'trained_model': trained_model,
         'MEDIA_URL': settings.MEDIA_URL  # Pass MEDIA_URL to the template
     })
+    
 
 

@@ -49,3 +49,35 @@ def plot_confusion_matrix(model, validation_data, name_model, user_id, project_n
     plt.title(f'{name_model} Confusion Matrix')
     plt.savefig(os.path.join(save_dir, f'{name_model}_confusion_matrix.png'))
     plt.close()
+
+import os
+import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from django.conf import settings
+
+def calculate_metrics(model, validation_data, name_model, user_id, project_name):
+    save_dir = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name)
+    os.makedirs(save_dir, exist_ok=True)  # Ensure directory exists
+
+    # Get model predictions
+    y_pred = np.argmax(model.predict(validation_data), axis=1)
+    y_true = validation_data.classes
+
+    # Calculate metrics
+    precision = precision_score(y_true, y_pred, average='weighted')
+    recall = recall_score(y_true, y_pred, average='weighted')
+    f1 = f1_score(y_true, y_pred, average='weighted')
+    accuracy = accuracy_score(y_true, y_pred)
+
+    # Store loss from model history (last epoch's loss)
+    loss = model.history.history['val_loss'][-1] if 'val_loss' in model.history.history else None
+
+
+
+    return {
+        "precision": precision,
+        "recall": recall,
+        "f1_score": f1,
+        "accuracy": accuracy,
+        "loss": loss if loss is not None else "N/A"
+    }

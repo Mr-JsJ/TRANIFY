@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ trained_model.project_name }} - Trainify</title>
     <link rel="stylesheet" href="{% static 'css/details.css' %}">
-    <!-- <link rel="stylesheet" href="{% static 'css/home.css' %}"> -->
 </head>
 <body>
  
@@ -29,26 +29,41 @@
     <h3>Trained Models</h3>
     <ul>
         {% for model, path in trained_model.model_paths.items %}
-    <li>
-        <strong>{{ model }}</strong> - <a href="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ trained_model.project_name }}_{{ model }}.h5" download>Download Model</a>
+        <li>
+            <strong>{{ model }}</strong> - 
+            <a href="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ trained_model.project_name }}_{{ model }}.h5" download>
+                Download Model
+            </a>
 
-        <div class="model-images">
-            <h4>Performance Metrics</h4>
-            <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
-                 alt="{{ model }} Accuracy" class="metric-image">
-           <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
-                   alt="{{ model }} Loss" class="metric-image">
-            <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
-                 alt="{{ model }} Confusion Matrix" class="metric-image">
-        </div>
-    </li>
-{% endfor %}
+            <!-- New: Model Performance Metrics -->
+            <div class="model-metrics">
+                <h4>Performance Metrics</h4>
+                <p><strong>Precision:</strong> {{ trained_model.precision|get:model }}</p>
+                <p><strong>Recall:</strong> {{ trained_model.recall|get:model }}</p>
+                <p><strong>F1 Score:</strong> {{ trained_model.f1_score|get:model }}</p>
+                <p><strong>Accuracy:</strong> {{ trained_model.accuracy|get:model }}</p>
+                <!-- <p><strong>Loss:</strong> {{ trained_model.loss|get:model }}</p> -->
+            </div>
+
+            <div class="model-images">
+                <h4>Visualizations</h4>
+                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
+                     alt="{{ model }} Accuracy" class="metric-image">
+                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
+                     alt="{{ model }} Loss" class="metric-image">
+                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
+                     alt="{{ model }} Confusion Matrix" class="metric-image">
+            </div>
+        </li>
+        {% endfor %}
     </ul>
 </div>
- <footer>
+
+<footer>
     <p>&copy; 2025 Trainify. All Rights Reserved.</p>
-  </footer>
-  <script>
+</footer>
+
+<script>
     document.addEventListener("DOMContentLoaded", function () {
         const modal = document.createElement("div");
         modal.classList.add("image-modal");

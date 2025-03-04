@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Dense, Flatten, Dropout
 from tensorflow.keras.models import Model,Sequential
 from django.conf import settings
 from tensorflow.keras.optimizers import Adam
-from .graph import plot_training_results, plot_confusion_matrix
+from .graph import plot_training_results, plot_confusion_matrix, calculate_metrics
 
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -17,6 +17,8 @@ if gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
     except RuntimeError as e:
         print(e)
+
+
 
 
 def train_vgg16(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
@@ -62,11 +64,11 @@ def train_vgg16(dataset_path, num_classes, user_id, project_name, epochs=10, bat
     name_model='VGG16'
     plot_training_results(history,name_model,user_id,project_name)
     plot_confusion_matrix(model, validation_data,name_model,user_id,project_name)
-    
-    return model_path, history
+    metrics=calculate_metrics(model, validation_data, name_model, user_id, project_name)
+    return model_path, history,metrics
 
 
-def train_resnet50(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=32):
+def train_resnet50(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
     image_size = (224, 224)
 
     train_datagen = ImageDataGenerator(
@@ -104,11 +106,11 @@ def train_resnet50(dataset_path, num_classes, user_id, project_name, epochs=10, 
 
     plot_training_results(history, "ResNet50", user_id, project_name)
     plot_confusion_matrix(model, validation_data, "ResNet50", user_id, project_name)
+    metrics=calculate_metrics(model, validation_data, "ResNet50", user_id, project_name)
+    return model_path, history,metrics
 
-    return model_path, history
 
-
-def train_mobilenetv2(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=32):
+def train_mobilenetv2(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
     image_size = (224, 224)
 
     train_datagen = ImageDataGenerator(
@@ -131,6 +133,7 @@ def train_mobilenetv2(dataset_path, num_classes, user_id, project_name, epochs=1
     for layer in base_model.layers[-4:]:  
         layer.trainable = True
 
+
     x = Flatten()(base_model.output)
     x = Dense(256, activation='relu')(x)
     x = Dropout(0.5)(x)
@@ -146,11 +149,11 @@ def train_mobilenetv2(dataset_path, num_classes, user_id, project_name, epochs=1
 
     plot_training_results(history, "MobileNetV2", user_id, project_name)
     plot_confusion_matrix(model, validation_data, "MobileNetV2", user_id, project_name)
+    metrics=calculate_metrics(model, validation_data, "MobileNetV2", user_id, project_name)
+    return model_path, history,metrics
 
-    return model_path, history
 
-
-def train_alexnet(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=32):
+def train_alexnet(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
     image_size = (227, 227)  
 
     train_datagen = ImageDataGenerator(
@@ -195,5 +198,5 @@ def train_alexnet(dataset_path, num_classes, user_id, project_name, epochs=10, b
 
     plot_training_results(history, "AlexNet", user_id, project_name)
     plot_confusion_matrix(model, validation_data, "AlexNet", user_id, project_name)
-
-    return model_path, history
+    metrics=calculate_metrics(model, validation_data, "AlexNet", user_id, project_name)
+    return model_path, history,metrics
