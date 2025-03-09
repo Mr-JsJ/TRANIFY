@@ -19,5 +19,20 @@ class TrainedModel(models.Model):
 
     def __str__(self):
         return f"{self.project_name} - {self.user.username}"
+    
+    
 
+from django.db import models
+
+class TrainingProgress(models.Model):
+    user_id = models.IntegerField()  # Stores user ID
+    project_name = models.CharField(max_length=255)  # Stores project name
+    epoch = models.IntegerField()  # Current epoch
+    loss = models.FloatField()  # Training loss
+    accuracy = models.FloatField()  # Training accuracy
+    timestamp = models.DateTimeField(auto_now_add=True)  # Timestamp of the update
+    model_name = models.CharField(max_length=255, default="UnknownModel")  # Name of the model being trained
+
+    def __str__(self):
+        return f"User {self.user_id} - {self.project_name} - Epoch {self.epoch}"
 
