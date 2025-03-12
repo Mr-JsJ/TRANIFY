@@ -8,8 +8,10 @@ from tensorflow.keras.models import Model,Sequential
 from django.conf import settings
 from tensorflow.keras.optimizers import Adam
 from .graph import plot_training_results, plot_confusion_matrix, calculate_metrics
+from tensorflow.keras.callbacks import LambdaCallback
+from .models import TrainingProgress
 
-
+# Allow GPU memory growth
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     try:
@@ -21,27 +23,30 @@ if gpus:
 
 
 
+def clear_training_progress(user_id, project_name):
+    TrainingProgress.objects.filter(user_id=user_id, project_name=project_name).delete()
+
+def update_progress(user_id, project_name, epoch, loss, accuracy,model_name):
+    TrainingProgress.objects.create(
+        user_id=user_id,
+        project_name=project_name,
+        epoch=epoch,
+        loss=loss,
+        accuracy=accuracy,
+        model_name=model_name
+    )
+
 def train_vgg16(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
     image_size = (224, 224)
-    
-    train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    rotation_range=30,      # Rotates images up to 30 degrees
-    width_shift_range=0.2,  # Shifts image width up to 20%
-    height_shift_range=0.2, # Shifts image height up to 20%
-    shear_range=0.2,
-    zoom_range=0.3,         # Increased zoom range
-    horizontal_flip=True,
-    brightness_range=[0.8, 1.2], # Random brightness changes
-    fill_mode='nearest',
-    validation_split=0.2
-)
 
-    train_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='training')
-    validation_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='validation')
+    train_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
+    train_data = train_datagen.flow_from_directory(
+        dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='training')
+    validation_data = train_datagen.flow_from_directory(
+        dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='validation')
 
     base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-    for layer in base_model.layers[-4:]:  # Unfreeze last 4 layers
+    for layer in base_model.layers[-4:]:
         layer.trainable = True
 
     x = Flatten()(base_model.output)
@@ -50,45 +55,37 @@ def train_vgg16(dataset_path, num_classes, user_id, project_name, epochs=10, bat
     predictions = Dense(num_classes, activation='softmax')(x)
 
     model = Model(inputs=base_model.input, outputs=predictions)
-    model.compile(
-    optimizer=Adam(learning_rate=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-07),
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
-)
+    model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(train_data, epochs=epochs, validation_data=validation_data)
-  
+    # Callback function to update training progress
+    def on_epoch_end(epoch, logs):
+        update_progress(user_id, project_name, epoch + 1, logs['loss'], logs['accuracy'], "VGG16")
+
+    history = model.fit(train_data, epochs=epochs, validation_data=validation_data,
+                        callbacks=[LambdaCallback(on_epoch_end=on_epoch_end)])
+
     model_path = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name, f'{project_name}_vgg16.h5')
-
     model.save(model_path)
-    name_model='VGG16'
-    plot_training_results(history,name_model,user_id,project_name)
-    plot_confusion_matrix(model, validation_data,name_model,user_id,project_name)
-    metrics=calculate_metrics(model, validation_data, name_model, user_id, project_name)
-    return model_path, history,metrics
+    plot_training_results(history, "VGG16", user_id, project_name)
+    plot_confusion_matrix(model, validation_data, "VGG16", user_id, project_name)
+    metrics = calculate_metrics(model, validation_data, "VGG16", user_id, project_name)
+    clear_training_progress(user_id, project_name)
+
+    return model_path, history, metrics
 
 
+
+# ResNet50 Training Function
 def train_resnet50(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
     image_size = (224, 224)
+    print("Training ResNet50")
 
-    train_datagen = ImageDataGenerator(
-        rescale=1./255,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.3,
-        horizontal_flip=True,
-        brightness_range=[0.8, 1.2],
-        fill_mode='nearest',
-        validation_split=0.2
-    )
-
+    train_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
     train_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='training')
     validation_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='validation')
 
     base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-    for layer in base_model.layers[-4:]:  
+    for layer in base_model.layers[-4:]:
         layer.trainable = True
 
     x = Flatten()(base_model.output)
@@ -99,40 +96,34 @@ def train_resnet50(dataset_path, num_classes, user_id, project_name, epochs=10, 
     model = Model(inputs=base_model.input, outputs=predictions)
     model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(train_data, epochs=epochs, validation_data=validation_data)
+    def on_epoch_end(epoch, logs):
+        update_progress(user_id, project_name, epoch + 1, logs['loss'], logs['accuracy'], "ResNet50")
+
+    history = model.fit(train_data, epochs=epochs, validation_data=validation_data, callbacks=[LambdaCallback(on_epoch_end=on_epoch_end)])
 
     model_path = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name, f'{project_name}_resnet50.h5')
     model.save(model_path)
-
     plot_training_results(history, "ResNet50", user_id, project_name)
-    plot_confusion_matrix(model, validation_data, "ResNet50", user_id, project_name)
-    metrics=calculate_metrics(model, validation_data, "ResNet50", user_id, project_name)
-    return model_path, history,metrics
+    plot_confusion_matrix(model, validation_data, "ResNet50", user_id, project_name)   
+    metrics = calculate_metrics(model, validation_data, "ResNet50", user_id, project_name)
+    clear_training_progress(user_id, project_name)
+
+    return model_path, history, metrics
 
 
+
+# MobileNetV2 Training Function
 def train_mobilenetv2(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
     image_size = (224, 224)
+    print("Training MobileNetV2")
 
-    train_datagen = ImageDataGenerator(
-        rescale=1./255,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.3,
-        horizontal_flip=True,
-        brightness_range=[0.8, 1.2],
-        fill_mode='nearest',
-        validation_split=0.2
-    )
-
+    train_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
     train_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='training')
     validation_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='validation')
 
     base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-    for layer in base_model.layers[-4:]:  
+    for layer in base_model.layers[-4:]:
         layer.trainable = True
-
 
     x = Flatten()(base_model.output)
     x = Dense(256, activation='relu')(x)
@@ -142,33 +133,29 @@ def train_mobilenetv2(dataset_path, num_classes, user_id, project_name, epochs=1
     model = Model(inputs=base_model.input, outputs=predictions)
     model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(train_data, epochs=epochs, validation_data=validation_data)
+    def on_epoch_end(epoch, logs):
+        update_progress(user_id, project_name, epoch + 1, logs['loss'], logs['accuracy'], "MobileNetV2")
+
+    history = model.fit(train_data, epochs=epochs, validation_data=validation_data, callbacks=[LambdaCallback(on_epoch_end=on_epoch_end)])
 
     model_path = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name, f'{project_name}_mobilenetv2.h5')
     model.save(model_path)
-
     plot_training_results(history, "MobileNetV2", user_id, project_name)
     plot_confusion_matrix(model, validation_data, "MobileNetV2", user_id, project_name)
-    metrics=calculate_metrics(model, validation_data, "MobileNetV2", user_id, project_name)
-    return model_path, history,metrics
+    metrics = calculate_metrics(model, validation_data, "MobileNetV2", user_id, project_name)
+    clear_training_progress(user_id, project_name)
+
+    return model_path, history, metrics
 
 
+
+
+# AlexNet Training Function
 def train_alexnet(dataset_path, num_classes, user_id, project_name, epochs=10, batch_size=16):
-    image_size = (227, 227)  
+    image_size = (227, 227)
+    print("Training AlexNet")
 
-    train_datagen = ImageDataGenerator(
-        rescale=1./255,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.3,
-        horizontal_flip=True,
-        brightness_range=[0.8, 1.2],
-        fill_mode='nearest',
-        validation_split=0.2
-    )
-
+    train_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
     train_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='training')
     validation_data = train_datagen.flow_from_directory(dataset_path, target_size=image_size, batch_size=batch_size, class_mode='categorical', subset='validation')
 
@@ -191,12 +178,17 @@ def train_alexnet(dataset_path, num_classes, user_id, project_name, epochs=10, b
 
     model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(train_data, epochs=epochs, validation_data=validation_data)
+    def on_epoch_end(epoch, logs):
+        update_progress(user_id, project_name, epoch + 1, logs['loss'], logs['accuracy'], "AlexNet")
+
+    history = model.fit(train_data, epochs=epochs, validation_data=validation_data, callbacks=[LambdaCallback(on_epoch_end=on_epoch_end)])
 
     model_path = os.path.join(settings.MEDIA_ROOT, f'{user_id}-USER', project_name, f'{project_name}_alexnet.h5')
     model.save(model_path)
-
     plot_training_results(history, "AlexNet", user_id, project_name)
     plot_confusion_matrix(model, validation_data, "AlexNet", user_id, project_name)
-    metrics=calculate_metrics(model, validation_data, "AlexNet", user_id, project_name)
-    return model_path, history,metrics
+    metrics = calculate_metrics(model, validation_data, "AlexNet", user_id, project_name)
+    clear_training_progress(user_id, project_name)
+
+    return model_path, history, metrics
+
