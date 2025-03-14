@@ -13,7 +13,11 @@ urlpatterns = [
   path('upload',views.upload,name='upload'), 
   path('your-projects/',views.user_projects, name='your_projects'),
   path('model_details/<int:model_id>/',views.model_details, name='model_details'),
-  # path('process_training/', views.process_training, name='process_training')
+  path('test-model/<str:model_name>/', views.test_model, name='test_model'),
+  path("delete-project/<int:project_id>/",views.delete_project, name="delete_project"),
+  path("about/",views.about, name="about"),
+  path("contact/",views.contact_view, name="contact"),
+  path('get_progress/<int:user_id>/<str:project_name>/',views.get_training_progress, name='get_progress'),
 ]
 if settings.DEBUG:  # Serve media files in development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
