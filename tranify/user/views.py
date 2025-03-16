@@ -113,7 +113,6 @@ def logout_user(request):
 def home(request):
     return render(request,'home.html')
 
-
 @login_required(login_url='login')
 def upload(request):
     if request.method == "POST":
@@ -193,7 +192,7 @@ def upload(request):
             loss=loss_values
         )
         
-        messages.success(request, f"Models trained successfully! Saved at {model_paths}")
+        messages.success(request, f"Models trained successfully! Saved to project '{project_name}'.")
         return redirect("model_details", model_id=trained_model.id)
 
     return render(request, "upload.html")
