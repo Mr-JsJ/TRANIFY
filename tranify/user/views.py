@@ -197,6 +197,52 @@ def upload(request):
 
     return render(request, "upload.html")
 
+
+
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import cv2
+import numpy as np
+
+def augment_and_save_images(class_path, class_name, required_images):
+    """Augments images for a given class if they are below the required number."""
+    print(f"Augmenting class '{class_name}' to {required_images} images.")
+    
+    existing_images = [f for f in os.listdir(class_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp'))]
+    num_existing = len(existing_images)
+
+    if num_existing == 0:
+        print(f"No images found for class '{class_name}'. Skipping augmentation.")
+        return
+
+    datagen = ImageDataGenerator(
+        rotation_range=30,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.3,
+        horizontal_flip=True,
+        brightness_range=[0.8, 1.2],
+        fill_mode='nearest'
+    )
+
+    images = []
+    for img_name in existing_images:
+        img_path = os.path.join(class_path, img_name)
+        img = cv2.imread(img_path)
+        if img is None:
+            continue
+        img = cv2.resize(img, (224, 224))  # Resize to match model input
+        images.append(img)
+
+    images = np.array(images)
+    augment_count = required_images - num_existing
+    generated = 0
+
+    for batch in datagen.flow(images, batch_size=1, save_to_dir=class_path, save_prefix="aug", save_format="jpg"):
+        generated += 1
+        if generated >= augment_count:
+            break  # Stop when we have enough augmented images
+
 def handle_uploaded_zip(file, extract_path):
     if os.path.exists(extract_path):
         shutil.rmtree(extract_path)
