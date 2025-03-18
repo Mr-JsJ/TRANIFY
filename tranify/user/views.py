@@ -244,6 +244,7 @@ def augment_and_save_images(class_path, class_name, required_images):
             break  # Stop when we have enough augmented images
 
 def handle_uploaded_zip(file, extract_path):
+    """Extracts and processes the uploaded dataset ZIP file."""
     if os.path.exists(extract_path):
         shutil.rmtree(extract_path)
     os.makedirs(extract_path, exist_ok=True)
@@ -258,7 +259,7 @@ def handle_uploaded_zip(file, extract_path):
             zip_ref.extractall(extract_path)
     except zipfile.BadZipFile:
         os.remove(temp_zip_path)
-        return 0, {}, {}
+        return 0, {}, {}, extract_path
 
     os.remove(temp_zip_path)
 
@@ -272,7 +273,16 @@ def handle_uploaded_zip(file, extract_path):
     num_classes = len(class_names)
     class_image_counts = {cls: count_images(os.path.join(dataset_root, cls)) for cls in class_names}
 
+    # Perform augmentation if any class has <5000 images
+    for class_name, count in class_image_counts.items():
+        if count < 5000:
+            class_path = os.path.join(dataset_root, class_name)
+            augment_and_save_images(class_path, class_name, 5000)  # Augment up to 5000 images
+
+    class_image_counts = {cls: count_images(os.path.join(dataset_root, cls)) for cls in class_names}  # Recalculate after augmentation
+
     return num_classes, class_names, class_image_counts, dataset_root
+
 
 
 def count_images(directory):
