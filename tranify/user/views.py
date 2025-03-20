@@ -295,6 +295,7 @@ def user_projects(request):
     return render(request, 'yourproject.html', {'projects': projects})
 
 
+
 def model_details(request, model_id):
     trained_model = get_object_or_404(TrainedModel, id=model_id, user=request.user)
     print("trained_model",trained_model)
