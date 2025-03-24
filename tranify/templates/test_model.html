@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test Model - Trainify</title>
+        <link rel="stylesheet" href="{% static 'css/test.css' %}">
+        <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    </head>
+    
+<body>
+    {% include 'navbar.html' %}
+
+    <div id="test-container">
+        <h1 id="test-title">Test Model</h1>
+
+        {% if error %}
+            <p id="test-error">{{ error }}</p>
+        {% endif %}
+
+        <form id="test-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label id="test-label" for="test-file-input">Upload an Image:</label>
+            <input type="file" name="image" id="test-file-input" required>
+            <button id="test-submit-button" type="submit">Test Model</button>
+        </form>
+
+        {% if predicted_label %}
+            <h2 id="test-prediction">Prediction: {{ predicted_label }}</h2>
+            <img id="test-image" src="{{ image_url }}" alt="Uploaded Image">
+        {% endif %}
+    </div>
+</body>
+</html>
