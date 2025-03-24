@@ -304,3 +304,54 @@ def model_details(request, model_id):
     })
     
 
+
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+
+
+def test_model(request, model_name):
+    if request.method == "POST" and request.FILES.get("image"):
+        image_file = request.FILES["image"]
+        
+        # Save the uploaded image temporarily
+        temp_dir = os.path.join(settings.MEDIA_ROOT, "temp")
+        os.makedirs(temp_dir, exist_ok=True)
+        image_path = os.path.join(temp_dir, image_file.name)
+
+        with default_storage.open(image_path, "wb+") as destination:
+            for chunk in image_file.chunks():
+                destination.write(chunk)
+
+        image_url = default_storage.url(os.path.join("temp", image_file.name))  # Correct way to get URL
+
+        # Load the model
+        trained_model = TrainedModel.objects.filter(trained_models__contains=[model_name]).first()
+        if not trained_model:
+            return render(request, "test_model.html", {"error": "Model not found!"})
+
+        model_path = os.path.join(settings.MEDIA_ROOT, f"{trained_model.user.id}-USER/{trained_model.project_name}/{trained_model.project_name}_{model_name}.h5")
+        
+        if not os.path.exists(model_path):
+            return render(request, "test_model.html", {"error": "Model file not found!"})
+
+        model = tf.keras.models.load_model(model_path)
+
+        # Preprocess the image
+        img = Image.open(image_path).convert("RGB")  # Convert to RGB
+        expected_size = (224, 224) if "VGG16" in model_name or "ResNet50" in model_name or "MobileNetV2" in model_name else (227, 227)
+        img = img.resize(expected_size)  # Resize to match model input
+        img_array = np.array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+
+        # Make a prediction
+        predictions = model.predict(img_array)
+        predicted_class = np.argmax(predictions)
+
+        # Get class names
+        class_names = trained_model.class_names
+        predicted_label = class_names[predicted_class] if predicted_class < len(class_names) else "Unknown"
+
+        return render(request, "test_model.html", {"predicted_label": predicted_label, "image_url": image_url})
+
+    return render(request, "test_model.html")
