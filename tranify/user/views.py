@@ -389,3 +389,7 @@ def delete_project(request, project_id):
 
     return redirect("model_details", model_id=project_id)
 
+
+def about(request):
+    return render(request, "about.html")
+
