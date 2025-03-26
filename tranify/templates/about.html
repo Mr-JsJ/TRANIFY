@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Trainify</title>
+    
+    <!-- Linking External CSS -->
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/about.css' %}">
+
+    <!-- Google Fonts (Matching Home Page) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- About Section -->
+    <section id="about-banner">
+        <div id="about-content">
+            <h1 id="about-title">About Trainify</h1>
+            <p id="about-text">
+                Trainify is an intuitive AI training platform designed for students, educators, small business owners, and AI enthusiasts. 
+                Our mission is to simplify machine learning by providing an easy-to-use interface for data training and model deployment.
+            </p>
+        </div>
+    </section>
+
+    <!-- Our Mission -->
+    <section id="mission">
+        <h2 id="mission-title">Our Mission</h2>
+        <p id="mission-text">
+            At Trainify, we believe AI should be accessible to everyone. 
+            We provide tools that help users build machine learning models without requiring deep technical expertise.
+        </p>
+    </section>
+
+    <!-- Our Vision -->
+    <section id="vision">
+        <h2 id="vision-title">Our Vision</h2>
+        <p id="vision-text">
+            We aim to bridge the gap between AI and non-technical users, enabling innovation and creativity in various fields.
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer id="about-footer">
+        <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
