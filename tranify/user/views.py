@@ -355,3 +355,37 @@ def test_model(request, model_name):
         return render(request, "test_model.html", {"predicted_label": predicted_label, "image_url": image_url})
 
     return render(request, "test_model.html")
+
+
+
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import TrainedModel
+import os
+from django.conf import settings
+
+@login_required
+def delete_project(request, project_id):
+    trained_model = get_object_or_404(TrainedModel, id=project_id, user=request.user)
+
+    if request.method == "POST":
+        # Get the project folder path
+        project_folder_path = os.path.join(settings.MEDIA_ROOT, f"{trained_model.user.id}-USER", trained_model.project_name)
+
+        # Delete project folder if it exists
+        if os.path.exists(project_folder_path):
+            try:
+                import shutil
+                shutil.rmtree(project_folder_path)
+            except Exception as e:
+                messages.error(request, f"Error deleting files: {e}")
+
+        # Delete the project from the database
+        trained_model.delete()
+        messages.success(request, "Project deleted successfully!")
+        return redirect("your_projects")  # Redirect to user's project list
+
+    return redirect("model_details", model_id=project_id)
+
