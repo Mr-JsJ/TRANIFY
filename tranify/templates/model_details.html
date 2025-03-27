@@ -7,91 +7,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ trained_model.project_name }} - Trainify</title>
     <link rel="stylesheet" href="{% static 'css/details.css' %}">
+    
+    
+    <style>
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .image-modal img {
+            max-width: 80%;
+            max-height: 80%;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
- 
     {% include 'navbar.html' %}
-  
-{% block content %}
-<div class="container">
-    <h1>{{ trained_model.project_name }}</h1>
-    <p><strong>Number of Classes:</strong> {{ trained_model.num_classes }}</p>
-    <p><strong>Class Names:</strong> {{ trained_model.class_names|join:", " }}</p>
-    <p><strong>Epochs:</strong> {{ trained_model.epochs }}</p>
+    
+    {% block content %}
+    <div class="container">
+        <h1>{{ trained_model.project_name }}</h1>
+        <p><strong>Number of Classes:</strong> {{ trained_model.num_classes }}</p>
+        <p><strong>Class Names:</strong> {{ trained_model.class_names|join:", " }}</p>
+        <p><strong>Epochs:</strong> {{ trained_model.epochs }}</p>
 
-    <h3>Image Counts Per Class</h3>
-    <ul>
-        {% for class, count in trained_model.image_counts.items %}
-        <li>{{ class }}: {{ count }} images</li>
-        {% endfor %}
-    </ul>
+        <h3>Image Counts Per Class</h3>
+        <ul>
+            {% for class, count in trained_model.image_counts.items %}
+            <li>{{ class }}: {{ count }} images</li>
+            {% endfor %}
+        </ul>
 
-    <h3>Trained Models</h3>
-    <ul>
-        {% for model, path in trained_model.model_paths.items %}
-        <li>
-            <strong>{{ model }}</strong> - 
-            <a href="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ trained_model.project_name }}_{{ model }}.h5" download>
-                Download Model
-            </a>
+        <h3>Trained Models</h3>
+        <ul>
+            {% for model, path in trained_model.model_paths.items %}
+            <li>
+                <strong>{{ model }}</strong> - 
+                <a href="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name|urlencode }}/{{ trained_model.project_name|urlencode }}_{{ model|urlencode }}.h5" download>
+                    Download Model
+                </a>
+                
+                <div class="model-metrics">
+                    <h4>Performance Metrics</h4>
+                    <p><strong>Precision:</strong> {{ trained_model.precision|get:model|floatformat:4 }}</p>
+                    <p><strong>Recall:</strong> {{ trained_model.recall|get:model|floatformat:4 }}</p>
+                    <p><strong>F1 Score:</strong> {{ trained_model.f1_score|get:model|floatformat:4 }}</p>
+                    <p><strong>Accuracy:</strong> {{ trained_model.accuracy|get:model|floatformat:4 }}</p>
+                </div>
+                
+                <button onclick="checkModel('{{ model }}')">Check Model</button>
 
-            <!-- New: Model Performance Metrics -->
-            <div class="model-metrics">
-                <h4>Performance Metrics</h4>
-                <p><strong>Precision:</strong> {{ trained_model.precision|get:model }}</p>
-                <p><strong>Recall:</strong> {{ trained_model.recall|get:model }}</p>
-                <p><strong>F1 Score:</strong> {{ trained_model.f1_score|get:model }}</p>
-                <p><strong>Accuracy:</strong> {{ trained_model.accuracy|get:model }}</p>
-                <!-- <p><strong>Loss:</strong> {{ trained_model.loss|get:model }}</p> -->
-            </div>
+                <div class="model-images">
+                    <h4>Visualizations</h4>
+                    <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
+                         alt="{{ model }} Accuracy" class="metric-image"
+                         onerror="this.onerror=null;this.src='{% static "images/no_image.png" %}';">
+                    <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
+                         alt="{{ model }} Loss" class="metric-image"
+                         onerror="this.onerror=null;this.src='{% static "images/no_image.png" %}';">
+                    <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
+                         alt="{{ model }} Confusion Matrix" class="metric-image"
+                         onerror="this.onerror=null;this.src='{% static "images/no_image.png" %}';">
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <form method="POST" action="{% url 'delete_project' trained_model.id %}">
+            {% csrf_token %}
+            <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this project?');">Delete Project</button>
+        </form>
+    </div>
 
-            <div class="model-images">
-                <h4>Visualizations</h4>
-                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_accuracy_plot.png" 
-                     alt="{{ model }} Accuracy" class="metric-image">
-                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_loss_plot.png" 
-                     alt="{{ model }} Loss" class="metric-image">
-                <img src="{{ MEDIA_URL }}{{ trained_model.user.id }}-USER/{{ trained_model.project_name }}/{{ model }}_confusion_matrix.png" 
-                     alt="{{ model }} Confusion Matrix" class="metric-image">
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+    <footer id="otp-footer">
+        <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+      </footer>
 
-<footer>
-    <p>&copy; 2025 Trainify. All Rights Reserved.</p>
-</footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.createElement("div");
+            modal.classList.add("image-modal");
+            modal.innerHTML = '<span class="close">&times;</span><img src="">';
+            document.body.appendChild(modal);
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.createElement("div");
-        modal.classList.add("image-modal");
-        modal.innerHTML = '<span class="close">&times;</span><img src="">';
-        document.body.appendChild(modal);
+            const modalImg = modal.querySelector("img");
+            const closeModal = modal.querySelector(".close");
 
-        const modalImg = modal.querySelector("img");
-        const closeModal = modal.querySelector(".close");
+            document.querySelectorAll(".metric-image").forEach(img => {
+                img.addEventListener("click", function () {
+                    modal.style.opacity = "0";
+                    modal.style.display = "flex";
+                    setTimeout(() => modal.style.opacity = "1", 50);
+                    modalImg.src = this.src;
+                });
+            });
 
-        document.querySelectorAll(".metric-image").forEach(img => {
-            img.addEventListener("click", function () {
-                modal.style.display = "flex";
-                modalImg.src = this.src;
+            closeModal.addEventListener("click", function () {
+                modal.style.opacity = "0";
+                setTimeout(() => modal.style.display = "none", 300);
+            });
+
+            modal.addEventListener("click", function (e) {
+                if (e.target !== modalImg) {
+                    modal.style.opacity = "0";
+                    setTimeout(() => modal.style.display = "none", 300);
+                }
             });
         });
 
-        closeModal.addEventListener("click", function () {
-            modal.style.display = "none";
-        });
-
-        modal.addEventListener("click", function (e) {
-            if (e.target !== modalImg) {
-                modal.style.display = "none";
-            }
-        });
-    });
-</script>
-
+        function checkModel(modelName) {
+            window.location.href = `/test-model/${modelName}/`;
+        }
+    </script>
 </body>
 </html>
 {% endblock %}
