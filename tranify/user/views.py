@@ -393,3 +393,31 @@ def delete_project(request, project_id):
 def about(request):
     return render(request, "about.html")
 
+
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        if name and email and message:
+            subject = f"New Contact Message from {name}"
+            full_message = f"Sender Name: {name}\nSender Email: {email}\n\nMessage:\n{message}"
+
+            send_mail(
+                subject,
+                full_message,
+                email,  # From Email
+                ["admin@yourwebsite.com"],  # To Admin Email
+            )
+
+            messages.success(request, "Your message has been sent successfully!")
+            return redirect("contact")
+        else:
+            messages.error(request, "All fields are required!")
+
+    return render(request, "contact.html")
