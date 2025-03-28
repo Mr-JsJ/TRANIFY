@@ -1,21 +1,21 @@
-
 {% load static %}
-<header>
-    <nav>
-        <a href="{% url 'home' %}"><img src="{% static 'img/logo.webp' %}" alt="image"></a>
-        <ul>           
-            {% if not user.is_authenticated %}
-            <li><a href="{% url 'login' %}">Login</a></li>
-            <li><a href="{% url 'signup' %}">Signup</a></li>
-            {% endif %}
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-            {% if user.is_authenticated %}
-            <li><a href="{% url 'your_projects' %}">Your Projects</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-            {% endif %}
+<header id="navbar-header">
+    <nav id="navbar">
+        <a href="{% url 'home' %}">
+            <img id="navbar-logo" src="{% static 'img/logo.webp' %}" alt="Trainify Logo">
+        </a>
+        <ul id="navbar-menu">
+            <li><a id="nav-home" href="{% url 'home' %}">Home</a></li>
+            <li><a id="nav-about" href="{% url 'about' %}">About</a></li>
+            <li><a id="nav-contact" href="{% url 'contact'%}">Contact</a></li>
 
+            {% if not user.is_authenticated %}
+                <li><a id="nav-login" href="{% url 'login' %}">Login</a></li>
+                <li><a id="nav-signup" href="{% url 'signup' %}">Signup</a></li>
+            {% else %}
+                <li><a id="nav-projects" href="{% url 'your_projects' %}">Your Projects</a></li>
+                <li><a id="nav-logout" href="{% url 'logout' %}">Logout</a></li>
+            {% endif %}
         </ul>
     </nav>
 </header>

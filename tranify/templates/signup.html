@@ -5,64 +5,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Signup - Trainify</title>
-  <link rel="stylesheet" href="{% static 'css/home.css' %}">
-  <!-- <link rel="stylesheet" href="{% static 'css/signup.css' %}"> -->
+  
+  <!-- Linking External CSS -->
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+  <!-- Navbar -->
   <header>
     {% include 'navbar.html' %}
   </header>
 
-  <main >
-    <div class=" container">
+  <!-- Main Signup Section -->
+  <main id="signup-main">
+    <div id="signup-container">
       <!-- Title section -->
-      <div class="title">SIGNUP</div>
-      <div class="content">
+      <div id="signup-title">SIGNUP</div>
+      <div id="signup-content">
         <!-- Registration form -->
-        <form action="" method="post">
+        <form id="signup-form" action="" method="post">
           {% csrf_token %}
-          <div class="user-details">
+          <div id="signup-user-details">
             <!-- Input for Name -->
             <div class="input-box">
-              <span class="details">NAME:</span>
-              <input name="name" type="text" required>
+              <label for="name" class="details">NAME:</label>
+              <input id="name" name="name" type="text" required>
             </div>
             <!-- Input for Email -->
             <div class="input-box">
-              <span class="details">EMAIL:</span>
-              <input name="email" type="email" required>
+              <label for="email" class="details">EMAIL:</label>
+              <input id="email" name="email" type="email" required>
             </div>
             <!-- Input for Password -->
             <div class="input-box">
-              <span class="details">PASSWORD:</span>
-              <input name="password" type="password" required>
+              <label for="password" class="details">PASSWORD:</label>
+              <input id="password" name="password" type="password" required>
             </div>
             <!-- Input for Confirm Password -->
             <div class="input-box">
-              <span class="details">CONFIRM PASSWORD:</span>
-              <input name="cpassword" type="password" required>
+              <label for="cpassword" class="details">CONFIRM PASSWORD:</label>
+              <input id="cpassword" name="cpassword" type="password" required>
             </div>
           </div>
+
           <br> 
           <!-- Submit button -->
-          <div class="button">
+          <div id="signup-button">
             <input type="submit" value="SIGNUP">
           </div>
+
+          <!-- Error Messages -->
           <center>
-            {% if messages %} <p style="color: red;">
+            {% if messages %}
+              <p id="signup-error">
                 {% for message in messages %}
-                    {{message}}
+                    {{ message }}
                 {% endfor %}
-            </p>{% endif %}
-        </center>
+              </p>
+            {% endif %}
+          </center>
         </form>
-        <p>Already have an account? <a href="{% url 'login' %}">LOGIN</a></p>
+
+        <p id="signup-login-link">Already have an account? <a href="{% url 'login' %}">LOGIN</a></p>
       </div>
     </div>
   </main>
 
-  <footer>
+  <!-- Footer -->
+  <footer id="signup-footer">
     <p>&copy; 2025 Trainify. All Rights Reserved.</p>
   </footer>
 

@@ -6,19 +6,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signup - Trainify</title>
-  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  <title>Your Projects - Trainify</title>
+
+  <!-- Linking External CSS -->
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <link rel="stylesheet" href="{% static 'css/yourproject.css' %}">
 </head>
 <body>
 
-
+    <!-- Navbar -->
     {% include 'navbar.html' %}
 
+    <!-- Page Container -->
     <div class="containerp">
         <h1 class="page-title">Your Projects</h1>
-        <p class="page-description">Manage and track your machine learning projects with ease.</p>
+        <p class="page-description">Manage and track your projects.</p>
         
+        <!-- Project Grid -->
         <div class="project-grid">
             {% for project in projects %}
             <div class="card">
@@ -26,10 +30,10 @@
                     <h3>{{ project.project_name }}</h3>
                 </div>
                 <div class="card-body">
-                    <p><i class="fas fa-list"></i> <strong>Number of Classes:</strong> {{ project.num_classes }}</p>
-                    <p><i class="fas fa-tags"></i> <strong>Class Names:</strong> {{ project.class_names|join:", " }}</p>
-                    <p><i class="fas fa-chart-line"></i> <strong>Epochs:</strong> {{ project.epochs }}</p>
-                    <p><i class="fas fa-brain"></i> <strong>Trained Models:</strong> {{ project.trained_models|join:", " }}</p>
+                    <p><strong>Number of Classes:</strong> {{ project.num_classes }}</p>
+                    <p><strong>Class Names:</strong> {{ project.class_names|join:", " }}</p>
+                    <p><strong>Epochs:</strong> {{ project.epochs }}</p>
+                    <p><strong>Trained Models:</strong> {{ project.trained_models|join:", " }}</p>
                 </div>
                 <div class="card-footer">
                     <a href="{% url 'model_details' project.id %}" class="btn btn-info">View Details</a>
@@ -38,9 +42,12 @@
             {% endfor %}
         </div>
     </div>
-    <footer>
+
+    <!-- Footer -->
+    <footer id="project-footer">
         <p>&copy; 2025 Trainify. All Rights Reserved.</p>
-      </footer>
+    </footer>
+
+{% endblock content %}
 </body>
 </html>
-{% endblock content %}

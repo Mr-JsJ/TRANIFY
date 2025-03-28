@@ -5,7 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verify OTP - Trainify</title>
-  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+  <!-- Linking External CSS -->
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <link rel="stylesheet" href="{% static 'css/otp.css' %}">
 </head>
 <body>
@@ -14,17 +16,18 @@
   </header>
   
   <main>
-    <section class="otp-container">
-      <h2>Verify OTP</h2>
-      <form action="{% url 'verify_otp' %}" method="POST">
+    <section id="otp-container">
+      <h2 id="otp-title">Verify OTP</h2>
+      <form id="otp-form" action="{% url 'verify_otp' %}" method="POST">
         {% csrf_token %}
-        <label for="otp">Enter OTP:</label>
-        <input type="text" name="otp" required>
-        <button type="submit">Verify</button>
+        <label id="otp-label" for="otp">Enter OTP:</label>
+        <input id="otp-input" type="text" name="otp" required>
+        <button id="otp-button" type="submit">Verify</button>
       </form>
+
       <center>
         {% if messages %} 
-          <p style="color: red;">
+          <p id="otp-error">
             {% for message in messages %}
               {{ message }}
             {% endfor %}
@@ -34,8 +37,10 @@
     </section>
   </main>
 
-  <footer>
+  <!-- Footer -->
+  <footer id="otp-footer">
     <p>&copy; 2025 Trainify. All Rights Reserved.</p>
   </footer>
 </body>
 </html>
+<!-- End of verify_otp.html -->

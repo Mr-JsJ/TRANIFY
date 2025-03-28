@@ -5,66 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trainify - Train Your AI Model</title>
+    
+    <!-- Linking External CSS -->
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <style>
-        body {
-            overflow-y: hidden;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
-            text-align: center;
-        }
-        .banner {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{% static "img/home.jpg" %}') center/cover;
-            color: white;
-        }
-        .banner button {
-            padding: 12px 24px;
-            font-size: 18px;
-            color: white;
-            background: #007bff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .banner button:hover {
-            background: #0056b3;
-        }
-        footer {
-            padding: 15px;
-            background: #222;
-            color: white;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+
+    <!-- Google Fonts (Poppins for Consistency) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
+
+    <!-- Navbar -->
     {% include 'navbar.html' %}
-</header>
-    <section class="banner">
-        <div>
-            <h1>Welcome to Trainify</h1>
-            <p>Train your classification model effortlessly with an intuitive interface.</p>
+
+    <!-- Banner Section -->
+    <section id="banner">
+        <div id="banner-content">
+            <h1 id="banner-title">Welcome to Trainify</h1>
+            <p id="banner-text">Train your classification model effortlessly with an intuitive interface.</p>
+            
             {% if not user.is_authenticated %}
-                <button onclick="window.location.href='{% url 'login' %}';">Get Started</button>
+                <button id="banner-button" onclick="window.location.href='{% url 'login' %}';">Get Started</button>
             {% else %}
-                <button onclick="window.location.href='{% url 'upload' %}';">Upload Dataset</button>
+                <button id="banner-button" onclick="window.location.href='{% url 'upload' %}';">Upload Dataset</button>
             {% endif %}
         </div>
     </section>
-    <footer>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2 id="about-title">Why Choose Trainify?</h2>
+        <p id="about-text">Trainify makes AI model training accessible to everyone with its user-friendly interface and seamless dataset processing.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer">
         <p>&copy; 2025 Trainify. All Rights Reserved.</p>
     </footer>
+
 </body>
 </html>

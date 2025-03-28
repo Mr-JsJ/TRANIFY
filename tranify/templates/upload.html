@@ -5,85 +5,169 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project Classification - Trainify</title>
-  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+  
+  <!-- Linking External CSS -->
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <link rel="stylesheet" href="{% static 'css/upload.css' %}">
   <style>
-  
-  .model-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 1rem;
-  }
-  
-
-  .model-options div{
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    gap: 10px;
-  }
- 
-  
-  .model-options input {
-    width: 16px;
-    height: 16px;
-  }
-  .checkbox-label{
-    margin: unset;
-  }
-  
+    /* Styling for attractive loading screen */
+    #training_progress {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        z-index: 1000;
+    }
+    
+    .loader {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    #progress_text {
+        font-size: 18px;
+        margin-top: 15px;
+        font-weight: bold;
+        color: white;
+    }
   </style>
 </head>
 <body>
- 
+
+    <!-- Navbar -->
     {% include 'navbar.html' %}
 
-  
-  <main>
-    <section class="login-container">
-      <h2>Start Your Project!!!</h2>
-      <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <!-- Project Name -->
-        <label for="project-name">Project Name:</label>
-        <input type="text" id="project-name" name="project_name" placeholder="Enter project name" class="login-input" required>
-        
-        <!-- Zip File Upload -->
-        <label for="dataset">Upload Dataset (ZIP):</label>
-        <input type="file" id="dataset" name="dataset" accept=".zip" class="login-input" required>
+    <!-- Training Progress Section (Now as an overlay) -->
+    <div id="training_progress">
+        <h3>Training in Progress...</h3>
+        <div class="loader"></div>
+        <p id="progress_text">Waiting for updates...</p>
+    </div>
 
-        <!-- Epochs Input -->
-        <label for="epochs">Number of Epochs:</label>
-        <input type="number" id="epochs" name="epochs" min="1" max="50" placeholder="Enter number of epochs" class="login-input" required>
+    <!-- Main Upload Section -->
+    <main id="upload-main">
+        <div id="upload-container">
+            <h2 id="upload-title">Start Your Project!!!</h2>
+            <form id="upload-form" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        <!-- Model Selection Checkboxes -->
-        <label>Select Model(s):</label>
-        <div class="model-options">
-       <div> <input type="checkbox" name="models" value="alexnet"> <label >AlexNet</label></div>
-        <div><input type="checkbox" name="models" value="vgg16"> <label  >VGG16</label></div>
-        <div><input type="checkbox" name="models" value="resnet50"> <label  >ResNet50</label></div>
-        <div><input type="checkbox" name="models" value="mobilenetv2"><label  > MobileNetV2</label></div>
+                <!-- Project Name -->
+                <label for="project-name">Project Name:</label>
+                <input type="text" id="project-name" name="project_name" placeholder="Enter project name" required>
+
+                <!-- Zip File Upload -->
+                <label for="dataset">Upload Dataset (ZIP):</label>
+                <input type="file" id="dataset" name="dataset" accept=".zip" required>
+
+                <!-- Epochs Input -->
+                <label for="epochs">Number of Epochs:</label>
+                <input type="number" id="epochs" name="epochs" min="1" max="50" placeholder="Enter number of epochs" required>
+
+                <!-- Model Selection Checkboxes -->
+                <label>Select Model(s):</label>
+                <div id="upload-model-options">
+                    
+                    <!-- First Column -->
+                    <div class="upload-column">
+                        <div class="upload-model-option">
+                            <input type="checkbox" name="models" value="alexnet" id="alexnet">
+                            <label for="alexnet">AlexNet</label>
+                        </div>
+                        <div class="upload-model-option">
+                            <input type="checkbox" name="models" value="vgg16" id="vgg16">
+                            <label for="vgg16">VGG16</label>
+                        </div>
+                    </div>
+
+                    <!-- Second Column -->
+                    <div class="upload-column">
+                        <div class="upload-model-option">
+                            <input type="checkbox" name="models" value="resnet50" id="resnet50">
+                            <label for="resnet50">ResNet50</label>
+                        </div>
+                        <div class="upload-model-option">
+                            <input type="checkbox" name="models" value="mobilenetv2" id="mobilenetv2">
+                            <label for="mobilenetv2">MobileNetV2</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="upload-button" type="submit" onclick="startTraining();">Submit</button>
+
+                <!-- Error Messages -->
+                <center>
+                    {% if messages %}
+                        <p id="upload-error">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+                </center>
+            </form>
         </div>
+    </main>
 
-        <!-- Submit Button -->
-        <button type="submit">Submit</button>
-        <center>
-          {% if messages %} <p style="color: red;">
-              {% for message in messages %}
-                  {{message}}
-              {% endfor %}
-          </p>{% endif %}
-      </center>
-      </form>
-    </section>
-  </main>
+    <script>
+        function fetchProgress() {
+            const userId = 7;  // Replace with actual logged-in user ID
+            const projectName = document.getElementById("project-name").value.trim();
+            
+            if (!projectName) {
+                console.log("No project name entered.");
+                return; // Exit if project name is empty
+            }
 
-  <footer>
-    <p>&copy; 2025 Trainify. All Rights Reserved.</p>
-  </footer>
-  
+            const apiUrl = `/get_progress/${userId}/${encodeURIComponent(projectName)}/`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.epoch) {
+                        document.getElementById("progress_text").innerText = 
+                        `Model: ${data.model_name} | Epoch: ${data.epoch} | Accuracy: ${data.accuracy} | Loss: ${data.loss}`;
+                    } else {
+                        document.getElementById("progress_text").innerText = "Waiting for updates...";
+                    }
+                })
+                .catch(error => console.log("Error fetching progress:", error));
+        }
+
+        function startTraining() {
+            document.getElementById("training_progress").style.display = "block";
+            fetchProgress();  // Fetch immediately when training starts
+            setInterval(fetchProgress, 5000);  // Fetch progress every 5 seconds
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer id="upload-footer">
+        <p>&copy; 2025 Trainify. All Rights Reserved.</p>
+    </footer>
+
 </body>
 </html>

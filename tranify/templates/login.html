@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,53 +5,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Trainify</title>
-  <link rel="stylesheet" href="{% static 'css/home.css' %}">
-  <!-- <link rel="stylesheet" href="{% static 'css/login.css' %}"> -->
+  
+  <!-- Linking External CSS -->
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
-{% include 'navbar.html' %}
-  <main>
-    <div class="container">
+  {% include 'navbar.html' %}
+
+  <!-- Main Login Section -->
+  <main id="login-main">
+    <div id="login-container">
       <!-- Title section -->
-      <div class="title">LOGIN</div>
-      <div class="content">
-        <!-- Registration form -->
-        <form action="" method="post">
+      <div id="login-title">LOGIN</div>
+      <div id="login-content">
+        <!-- Login Form -->
+        <form id="login-form" action="" method="post">
           {% csrf_token %}
-          <div class="user-details">
+          <div id="login-user-details">
           
             <div class="input-box">
-              <span class="details">EMAIL:</span>
-              <input name="email" type="email" required>
+              <label for="email" class="details">EMAIL:</label>
+              <input id="email" name="email" type="email" required>
             </div>
+
             <!-- Input for Password -->
             <div class="input-box">
-              <span class="details">PASSWORD:</span>
-              <input name="password" type="password" required>
+              <label for="password" class="details">PASSWORD:</label>
+              <input id="password" name="password" type="password" required>
             </div>
-            <!-- Input for Confirm Password -->
           </div>
+
           <br> 
           <!-- Submit button -->
-          <div class="button">
-            <input type="submit" value="login">
+          <div id="login-button">
+            <input type="submit" value="Login">
           </div>
+
+          <!-- Error Messages -->
           <center>
-            {% if messages %} <p style="color: red;">
+            {% if messages %}
+              <p id="login-error">
                 {% for message in messages %}
-                    {{message}}
+                    {{ message }}
                 {% endfor %}
-            </p>{% endif %}
-        </center>
+              </p>
+            {% endif %}
+          </center>
         </form>
-        <p>I don't have an account? <a href="{% url 'signup' %}">SIGNUP</a></p>
+
+        <p id="login-signup">I don't have an account? <a href="{% url 'signup' %}">SIGNUP</a></p>
       </div>
     </div>
   </main>
 
-
-  <footer>
+  <!-- Footer -->
+  <footer id="footer">
     <p>&copy; 2025 Trainify. All Rights Reserved.</p>
   </footer>
+
 </body>
 </html>
