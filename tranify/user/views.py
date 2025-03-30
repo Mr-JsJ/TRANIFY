@@ -421,3 +421,22 @@ def contact_view(request):
             messages.error(request, "All fields are required!")
 
     return render(request, "contact.html")
+
+
+
+from django.http import JsonResponse
+from .models import TrainingProgress
+
+def get_training_progress(request, user_id, project_name):
+    """ Fetch the latest training progress for a given user and project. """
+    progress = TrainingProgress.objects.filter(user_id=user_id, project_name=project_name).order_by('-epoch').first()
+
+    if progress:
+        return JsonResponse({
+            "epoch": progress.epoch,
+            "loss": round(progress.loss, 4),
+            "accuracy": round(progress.accuracy, 4),
+            "model_name": progress.model_name
+        })
+    else:
+        return JsonResponse({"message": "Training not started yet."}, status=404)
