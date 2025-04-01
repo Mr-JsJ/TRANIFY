@@ -10,82 +10,72 @@ body {
     color: #333;
 }
 
-/* Banner Section */
-#banner {
+/* About Banner Section */
+#about-banner {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                url('../img/home.jpg') center/cover no-repeat;
+                url('../img/about-banner.jpg') center/cover no-repeat;
     color: white;
 }
 
-#banner-content {
+#about-content {
     position: relative;
     z-index: 2;
-    max-width: 600px;
+    max-width: 800px;
 }
 
-#banner-title {
+#about-title {
     font-size: 3rem;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-#banner-text {
+#about-text {
     font-size: 1.3rem;
     margin-bottom: 20px;
     line-height: 1.5;
 }
 
-#banner-button {
-    padding: 14px 28px;
-    font-size: 18px;
-    background: #007bff;
-    border: none;
-    border-radius: 50px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+/* Mission & Vision Sections */
+#mission {
+    text-align: center;
+    padding: 50px;
+    background: rgb(194, 189, 189);
 }
 
-#banner-button:hover {
-    background: #0056b3;
-    transform: scale(1.05);
-}
-
-/* About Section */
-#about {
+#vision {
     text-align: center;
     padding: 50px;
     background: white;
 }
 
-#about-title {
+#mission-title, #vision-title {
     font-size: 2.5rem;
     margin-bottom: 20px;
     color: #222;
 }
 
-#about-text {
+#mission-text, #vision-text {
     font-size: 1.2rem;
     max-width: 800px;
     margin: 0 auto;
     line-height: 1.6;
 }
 
-/* Footer */
-#footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background-color: #222;
-  color: white;
-  text-align: center;
-  padding: 15px;
-  font-size: 14px;
+/* Footer (Matching Home Page) */
+#about-footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
 }

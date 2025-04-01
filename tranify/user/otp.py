@@ -4,7 +4,7 @@ from email.message import EmailMessage
 
 # Email Configuration
 SENDER_EMAIL = "tranifyapp@gmail.com"  # Replace with your email
-SENDER_PASSWORD = "dknn fexi rrbe pfki"  # Replace with your email password
+SENDER_PASSWORD = "oool afxm cerl avjl"  # Replace with your email password
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465  # Use 587 for TLS, 465 for SSL
 

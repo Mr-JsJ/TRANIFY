@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+html, body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100%;
+    background: #f8f9fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* 📌 Main Container */
+#test-container {
+    width: 90%;
+    max-width: 600px;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    margin: 80px auto;
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 📌 Headings */
+#test-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+#test-prediction {
+    font-size: 1.5rem;
+    color: #0056b3;
+    margin-top: 20px;
+}
+
+/* 📌 Error Message */
+#test-error {
+    color: red;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* 📌 Form Styling */
+#test-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 📌 Labels */
+#test-label {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 📌 File Input */
+#test-file-input {
+    border: 2px dashed #007bff;
+    padding: 12px;
+    width: 100%;
+    max-width: 300px;
+    background: #f4f4f4;
+    border-radius: 6px;
+    transition: border 0.3s;
+    cursor: pointer;
+}
+
+#test-file-input:hover {
+    border-color: #0056b3;
+}
+
+/* 📌 Submit Button */
+#test-submit-button {
+    padding: 12px 16px;
+    font-size: 1rem;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: bold;
+}
+
+#test-submit-button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* 📸 Uploaded Image */
+#test-image {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 📱 Responsive Design */
+@media (max-width: 768px) {
+    #test-container {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    #test-file-input {
+        max-width: 100%;
+    }
+
+    #test-image {
+        max-width: 90%;
+    }
+}
+
+/* ✨ Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

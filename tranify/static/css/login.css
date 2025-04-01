@@ -1,45 +1,39 @@
-/* Import Google Font (Same as Login Page) */
+/* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
 
 /* General Page Styling */
-html, body {
-    font-family: 'Poppins', sans-serif; /* Same font as login page */
+body, html {
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    width: 100%;
     height: 100%;
-    overflow-x: hidden; /* Prevents horizontal scrolling */
-    background: #f4f4f4;
-    color: #333;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Main Container */
+#login-main {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-/* Signup Page Layout */
-#signup-main {
-    display: flex;
     justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-height: 100vh;
-    padding-top: 80px; /* Push content below navbar */
+    height: 100vh;
+    background: #f4f4f4;
 }
 
-/* Signup Container */
-#signup-container {
-    width: 100%;
-    max-width: 400px; /* Keeps the form centered and responsive */
+/* Login Container */
+#login-container {
+    width: 400px;
     background: white;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    box-sizing: border-box;
+    max-height: 80vh; /* Prevent form from exceeding viewport */
+    overflow: auto;
 }
 
 /* Title */
-#signup-title {
+#login-title {
     font-size: 2rem;
     font-weight: bold;
     color: #007bff;
@@ -47,7 +41,7 @@ html, body {
 }
 
 /* Form Fields */
-#signup-user-details {
+#login-user-details {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -55,23 +49,17 @@ html, body {
 
 .input-box {
     text-align: left;
-    width: 100%;
 }
 
-/* Make Labels Bold */
-.input-box label {
+.details {
     font-weight: bold;
-    font-size: 15px;
-    color: #222;
-    display: block; /* Ensures label is on top of the input field */
-    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
 }
 
 /* Input Fields */
-#name,
 #email,
-#password,
-#cpassword {
+#password {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -81,16 +69,14 @@ html, body {
     background: #f9f9f9;
 }
 
-#name:focus,
 #email:focus,
-#password:focus,
-#cpassword:focus {
+#password:focus {
     outline: none;
     border-color: #007bff;
 }
 
 /* Submit Button */
-#signup-button input {
+#login-button input {
     width: 100%;
     padding: 12px;
     font-size: 18px;
@@ -102,31 +88,31 @@ html, body {
     transition: background 0.3s, transform 0.2s;
 }
 
-#signup-button input:hover {
+#login-button input:hover {
     background: #0056b3;
     transform: scale(1.05);
 }
 
 /* Error Messages */
-#signup-error {
+#login-error {
     font-size: 14px;
     font-weight: bold;
     color: red;
 }
 
-/* Login Link */
-#signup-login-link a {
+/* Signup Link */
+#login-signup a {
     color: #007bff;
     font-weight: bold;
     text-decoration: none;
 }
 
-#signup-login-link a:hover {
+#login-signup a:hover {
     text-decoration: underline;
 }
 
-/* Footer (Matching Login & Home Page Footer) */
-#signup-footer {
+/* Footer (Fixed to Bottom) */
+#footer {
     background-color: #222;
     color: white;
     text-align: center;

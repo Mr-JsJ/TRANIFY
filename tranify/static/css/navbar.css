@@ -1,0 +1,84 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+/* Navbar Container */
+#navbar-header {
+    background-color: #222;
+    width: 100%;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+/* Navbar Styling */
+#navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Logo */
+#navbar-logo {
+    width: 60px;
+    height: 60px;
+}
+
+/* Menu */
+#navbar-menu {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+/* Menu Items */
+#navbar-menu li {
+    margin-left: 20px;
+}
+
+/* Links */
+#navbar-menu li a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    transition: color 0.3s, transform 0.2s;
+}
+
+/* Hover Effects */
+#navbar-menu li a:hover {
+    color: #00bcd4;
+    transform: scale(1.1);
+}
+
+/* Active Page Highlight */
+#nav-home.active,
+#nav-about.active,
+#nav-contact.active,
+#nav-login.active,
+#nav-signup.active,
+#nav-projects.active,
+#nav-logout.active {
+    border-bottom: 2px solid #00bcd4;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    #navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #navbar-menu {
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    #navbar-menu li {
+        margin: 10px 0;
+    }
+}

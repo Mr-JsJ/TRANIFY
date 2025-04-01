@@ -1,60 +1,92 @@
-/* Page Title and Description */
-.page-title {
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+/* General Page Styling */
+html, body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100vw; /* Ensures full screen width */
+    height: 100%;
+    background: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures the body takes the full screen height */
+    box-sizing: border-box; /* Prevents padding/margin from adding extra width */
+}
+
+/* Page Container (Ensures Content Stretches) */
+.containerp {
+    width: 90%;
+    max-width: 1100px;
+    margin: 80px auto 40px;
     text-align: center;
-    font-size: 2rem;
-    color: #00bcd4;
+    flex: 1; /* Pushes the footer down */
+    box-sizing: border-box; /* Prevents extra spacing */
+}
+
+/* Page Title */
+.page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
     margin-bottom: 10px;
 }
 
+/* Page Description */
 .page-description {
-    text-align: center;
     font-size: 1.2rem;
-    color: #ccc;
+    color: #555;
     margin-bottom: 30px;
 }
 
-/* Project Grid */
+/* Grid Layout for Projects */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    justify-content: center;
+    max-width: 100vw; /* Prevents grid from overflowing */
 }
 
-/* Card Styling */
+/* Ensure Cards Do Not Overflow */
 .card {
-    background-color: #444;
+    background: white;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: left;
+    max-width: 100%;
+    box-sizing: border-box; /* Ensures padding doesn't increase width */
 }
 
+/* Card Hover Effect */
 .card:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 /* Card Header */
+.card-header {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
 .card-header h3 {
     font-size: 1.5rem;
-    color: #00bcd4;
-    margin-bottom: 10px;
-    text-align: center;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
 }
 
 /* Card Body */
-.card-body p {
+.card-body {
     font-size: 1rem;
-    color: #fff;
-    margin: 5px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.card-body i {
-    color: #00bcd4;
+    color: #555;
+    line-height: 1.6;
 }
 
 /* Card Footer */
@@ -63,38 +95,42 @@
     margin-top: 15px;
 }
 
+/* View Details Button */
 .btn {
-    padding: 10px 20px;
+    display: inline-block;
+    padding: 10px 15px;
     font-size: 1rem;
-    background-color: #00bcd4;
-    color: #222;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s;
 }
 
-.btn:hover {
-    background-color: #0097a7;
+.btn-info {
+    background: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn-info:hover {
+    background: #0056b3;
+}
+
+/* Footer (Always at Bottom) */
+#project-footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+    width: 100vw; /* Ensures full width */
+    margin-top: auto; /* Pushes footer to bottom */
+    box-sizing: border-box;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .project-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
 }
-
-.containerp {
-    width: 100%;
-    margin: 50px auto;
-    background-color: #444;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content:center ;
-    align-items: center;
-    flex-direction: column;
-
-  }

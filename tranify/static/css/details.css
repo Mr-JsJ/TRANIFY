@@ -1,10 +1,14 @@
+/* Import Google Font (Same as Login Page) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+
 /* 🌐 Global Styles */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #222;
-    color: #ddd;
+    background-color: #f4f4f4;
+    color: #555;
 }
 
 /* ======================== */
@@ -53,7 +57,7 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    color: #00bcd4;
+    color: #007bff;
 }
 
 .logout-btn {
@@ -92,8 +96,9 @@ nav ul li a:hover {
     width: 90%;
     max-width: 1000px;
     margin: 100px auto; /* Adjusted margin for navbar */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
     padding: 20px;
-    background: #333;
+    background: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.5s ease-in-out;
@@ -103,21 +108,21 @@ nav ul li a:hover {
 h1 {
     text-align: center;
     font-size: 30px;
-    color: #00bcd4;
+    color: #007bff;
     margin-bottom: 15px;
 }
 
 h3 {
     font-size: 22px;
-    color: #00bcd4;
-    border-bottom: 2px solid #00bcd4;
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
     padding-bottom: 8px;
 }
 
 /* 📜 Paragraphs */
 p {
     font-size: 16px;
-    color: #ddd;
+    color: #555;
     margin: 8px 0;
 }
 
@@ -138,7 +143,7 @@ p {
 
 /* 🎯 Download Button */
 .model-list li a {
-    color: #00bcd4;
+    color: #007bff;
     text-decoration: none;
     font-weight: bold;
     padding: 6px 12px;

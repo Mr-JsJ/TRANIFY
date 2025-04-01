@@ -1,46 +1,133 @@
- /* Main OTP Section Styling */
- .otp-container {
-    max-width: 400px;
-    margin: 50px auto;
-    background-color: #444;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
 
-  .otp-container h2 {
+/* General Page Styling */
+html, body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevents scrolling */
+}
+
+/* OTP Page Main Section */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    flex: 1; /* Pushes the footer to the bottom */
+}
+
+/* OTP Form Container */
+#otp-container {
+    width: 100%;
+    max-width: 420px; /* Slightly wider for better spacing */
+    background: white;
+    padding: 2.5rem; /* Increased padding for better spacing */
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
-    margin-bottom: 1.5rem;
-    color: #00bcd4;
-  }
+    box-sizing: border-box;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
 
-  .otp-container label {
-    display: block;
-    margin-bottom: 0.5rem;
+/* Hover Effect */
+#otp-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* OTP Title */
+#otp-title {
+    font-size: 2rem;
     font-weight: bold;
-  }
+    color: #007bff;
+    margin-bottom: 1.8rem;
+}
 
-  .otp-container input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 1rem;
-    border: 1px solid #666;
-    border-radius: 4px;
-    background-color: #333;
-    color: #fff;
-  }
+/* Form Styling */
+#otp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Increased spacing between elements */
+}
 
-  .otp-container button {
-    width: 100%;
-    padding: 10px;
-    background-color: #00bcd4;
+/* Label */
+#otp-label {
+    font-weight: bold;
+    font-size: 1rem;
     color: #222;
-    border: none;
-    border-radius: 4px;
-    font-size: 1.1rem;
-    cursor: pointer;
-  }
+    text-align: left;
+    display: block;
+    margin-bottom: 8px;
+}
 
-  .otp-container button:hover {
-    background-color: #0097a7;
-  }
+/* OTP Input Field */
+#otp-input {
+    width: 100%;
+    padding: 14px; /* Increased padding for better spacing */
+    border: 2px solid #ccc;
+    border-radius: 8px; /* More rounded look */
+    font-size: 16px;
+    background: #f9f9f9;
+    transition: border 0.3s ease;
+}
+
+/* Focus Effect */
+#otp-input:focus {
+    outline: none;
+    border-color: #007bff;
+    background: #ffffff;
+    box-shadow: 0px 3px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Submit Button */
+#otp-button {
+    width: 100%;
+    padding: 14px; /* More padding for better appearance */
+    font-size: 18px;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    font-weight: bold;
+}
+
+/* Hover Effect */
+#otp-button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* Error Message */
+#otp-error {
+    font-size: 14px;
+    font-weight: bold;
+    color: red;
+    margin-top: 10px;
+}
+
+/* Footer (Fixed at Bottom, No Scrolling) */
+#otp-footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
