@@ -70,7 +70,7 @@
                     <p><strong>Accuracy:</strong> {{ trained_model.accuracy|get:model|floatformat:4 }}</p>
                 </div>
                 
-                <button onclick="checkModel('{{ model }}')">Check Model</button>
+                <button onclick="checkModel('{{ model }}', '{{ trained_model.id }}')">Check Model</button>
 
                 <div class="model-images">
                     <h4>Visualizations</h4>
@@ -129,9 +129,9 @@
             });
         });
 
-        function checkModel(modelName) {
-            window.location.href = `/test-model/${modelName}/`;
-        }
+        function checkModel(modelName, projectId) {
+        window.location.href = `/test-model/${modelName}/${projectId}/`;
+    }
     </script>
 </body>
 </html>

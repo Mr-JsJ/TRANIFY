@@ -242,7 +242,9 @@ def augment_and_save_images(class_path, class_name, required_images):
         generated += 1
         if generated >= augment_count:
             break  # Stop when we have enough augmented images
+    print(f"Successfully augmented {generated} images for class '{class_name}'.")
 
+    
 def handle_uploaded_zip(file, extract_path):
     """Extracts and processes the uploaded dataset ZIP file."""
     if os.path.exists(extract_path):
@@ -285,39 +287,6 @@ def handle_uploaded_zip(file, extract_path):
 
 
 
-
-# def handle_uploaded_zip(file, extract_path):
-#     if os.path.exists(extract_path):
-#         shutil.rmtree(extract_path)
-#     os.makedirs(extract_path, exist_ok=True)
-
-#     temp_zip_path = os.path.join(extract_path, file.name)
-#     with default_storage.open(temp_zip_path, 'wb+') as destination:
-#         for chunk in file.chunks():
-#             destination.write(chunk)
-
-#     try:
-#         with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
-#             zip_ref.extractall(extract_path)
-#     except zipfile.BadZipFile:
-#         os.remove(temp_zip_path)
-#         return 0, {}, {}
-
-#     os.remove(temp_zip_path)
-
-#     extracted_dirs = [d for d in os.listdir(extract_path) if os.path.isdir(os.path.join(extract_path, d))]
-#     dataset_root = os.path.join(extract_path, extracted_dirs[0]) if len(extracted_dirs) == 1 else extract_path
-
-#     class_names = [name for name in os.listdir(dataset_root)
-#                    if os.path.isdir(os.path.join(dataset_root, name))
-#                    and any(f.endswith(('.jpg', '.jpeg', '.png', '.bmp')) for f in os.listdir(os.path.join(dataset_root, name)))]
-
-#     num_classes = len(class_names)
-#     class_image_counts = {cls: count_images(os.path.join(dataset_root, cls)) for cls in class_names}
-
-#     return num_classes, class_names, class_image_counts, dataset_root
-
-
 def count_images(directory):
     return len([file for file in os.listdir(directory) if file.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp'))])
 
@@ -343,9 +312,10 @@ import numpy as np
 from PIL import Image
 
 
-def test_model(request, model_name):
+def test_model(request, model_name, project_id):
     if request.method == "POST" and request.FILES.get("image"):
         image_file = request.FILES["image"]
+        
         
         # Save the uploaded image temporarily
         temp_dir = os.path.join(settings.MEDIA_ROOT, "temp")
@@ -359,7 +329,7 @@ def test_model(request, model_name):
         image_url = default_storage.url(os.path.join("temp", image_file.name))  # Correct way to get URL
 
         # Load the model
-        trained_model = TrainedModel.objects.filter(trained_models__contains=[model_name]).first()
+        trained_model = get_object_or_404(TrainedModel, id=project_id, user=request.user)
         if not trained_model:
             return render(request, "test_model.html", {"error": "Model not found!"})
 
